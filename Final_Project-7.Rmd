@@ -1,0 +1,320 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+# Healthcare Cost Analysis
+# By:
+# Venkata Sai Mani Lakshmi Kavya Darsi
+# Pranjal Singh
+# Vipul Rajiv Sarode
+# Yoon Lee
+
+
+
+
+#Importing the dataset and removing the rows with na BMI and Hypertension values
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+
+health_raw <- read_csv("https://intro-datascience.s3.us-east-2.amazonaws.com/HMO_data.csv")
+health=health_raw %>% filter(!(is.na(bmi)))
+health=health %>% filter(!(is.na(hypertension)))
+sapply(health,function(x) sum(is.na(x)))
+sapply(health,function(x) sum(is.null(x)))
+
+str(health)
+#health
+```
+
+#Creating a New column 
+```{r}
+threshold=quantile(health$cost,probs=(.75))
+health$Expensive <- ifelse(health$cost>=threshold, 1, 0)
+glimpse(health)
+```
+
+#Creating Histograms for every numeric Variable
+```{r}
+library(ggplot2)
+#Age
+s=health%>%group_by(Expensive,age) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=s$age
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Age")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Age")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#BMI
+s=health%>%group_by(Expensive,bmi) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=s$bmi
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(position = "dodge",stat='identity',width = .35)+xlab("BMI")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(position="dodge",stat='identity',width = .35)+xlab("BMI")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#Children
+s=health%>%group_by(Expensive,children) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=s$children
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Children")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Children")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#hist(health$smoker)
+s=health%>%group_by(Expensive,smoker) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=s$smoker
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Smoker")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Smoker")+ylab("Average Cost")
+rm(s,a,b,c)
+
+
+#Location_type
+s=health%>%group_by(Expensive,location_type) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=(s$location_type)
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Location Type")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Location Type")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#hist(health$education_level)
+s=health%>%group_by(Expensive,education_level) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=(s$education_level)
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Education Level")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Education Level")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#hist(health$yearly_physical)
+s=health%>%group_by(Expensive,yearly_physical) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=s$yearly_physical
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Yearly Physical")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Yearly Physical")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#hist(health$exercise)
+s=health%>%group_by(Expensive,exercise) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=s$exercise
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Exercise")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Exercise")+ylab("Average Cost")
+
+rm(s,a,b,c)
+
+#hist(health$married)
+s=health%>%group_by(Expensive,married) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=s$married
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Married")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Married")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#hist(health$hypertension)
+s=health%>%group_by(Expensive,hypertension) %>%summarise(Freq = sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=(s$hypertension)
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Hypertension")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Hypertension")+ylab("Average Cost")
+rm(s,a,b,c)
+
+#hist(health$gender)
+s=health%>%group_by(Expensive,gender)%>%summarise(Freq = sum(cost),avg=sum(cost),avg=mean(cost))
+a=s$Expensive
+b=s$Freq
+c=(s$gender)
+d=s$avg
+ggplot(s, aes(y=b,x=c,fill=a))+geom_bar(stat='identity')+xlab("Gender")+ylab("Total Cost")
+ggplot(s, aes(y=d,x=c,fill=a))+geom_bar(stat='identity')+xlab("Gender")+ylab("Average Cost")
+rm(s,a,b,c)
+
+
+library(usmap)
+library(ggplot2)
+us_states=map_data("state")
+health$location=tolower(health$location)
+data_merge=health %>% group_by(location) %>% summarize(avg_cost=mean(cost),total_sum=sum(cost))
+merged=merge(data_merge,us_states,by.x='location',by.y='region')
+merged=merged %>% arrange(order)
+map=ggplot(merged)+geom_polygon(aes(x=long,y=lat,group=group,fill=avg_cost),color="black")
+map+coord_map()
+
+map=ggplot(merged)+geom_polygon(aes(x=long,y=lat,group=group,fill=total_sum),color="black")
+map+coord_map()
+
+```
+
+
+#Linear Regression
+```{r}
+#First Iteration
+lm<-lm(Expensive~.,data=health)
+summary(lm)
+
+res=resid(lm)
+plot(fitted(lm),res)+abline(0,0)
+
+qqnorm(health$Expensive)
+
+
+#Second Iteration
+#lm2=lm(Expensive~age+bmi+smoker+exercise+yearly_physical+hypertension+gender, data=health)
+#summary(lm2)
+```
+
+
+
+```{r}
+rm(health)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+
+health_raw <- read_csv("https://intro-datascience.s3.us-east-2.amazonaws.com/HMO_data.csv")
+health=health_raw %>% filter(!(is.na(bmi)))
+health=health %>% filter(!(is.na(hypertension)))
+sapply(health,function(x) sum(is.na(x)))
+sapply(health,function(x) sum(is.null(x)))
+
+threshold=quantile(health$cost,probs=(.75))
+health$cost <- ifelse(health$cost>=threshold, 1, 0)
+glimpse(health)
+```
+
+
+
+
+#Replacing values with numeric values for Models
+```{r}
+
+#smoker
+health$smoker<-str_replace_all(health$smoker,"no","0")
+health$smoker<-str_replace_all(health$smoker,"yes","1")
+#location_type
+health$location_type<-str_replace_all(health$location_type,"Country","0")
+health$location_type<-str_replace_all(health$location_type,"Urban","1")
+#education_level
+health$education_level<-str_replace_all(health$education_level,"No College Degree","0")
+health$education_level<-str_replace_all(health$education_level,"Bachelor","1")
+health$education_level<-str_replace_all(health$education_level,"Master","2")
+health$education_level<-str_replace_all(health$education_level,"PhD","3")
+#yearly_physical
+health$yearly_physical<-str_replace_all(health$yearly_physical,"No","0")
+health$yearly_physical<-str_replace_all(health$yearly_physical,"Yes","1")
+#exercise
+health$exercise<-str_replace_all(health$exercise,"Not-Active","0")
+health$exercise<-str_replace_all(health$exercise,"Active","1")
+#married
+health$married<-str_replace_all(health$married,"Not_Married","0")
+health$married<-str_replace_all(health$married,"Married","1")
+#gender
+# Make sure to re-code female first
+health$gender<-str_replace_all(health$gender,"female","1")
+health$gender<-str_replace_all(health$gender,"male","0")
+
+glimpse(health)
+#view(health)
+#summary(health)
+
+```
+
+
+#Removing NA's and Changing the Column type to numerics
+
+```{r}
+library(imputeTS)
+#install.packages("zoo")
+library(zoo)
+#delete.na <- function(DF, n) {
+#  DF[rowSums(is.na(DF)) <= n,]
+#}
+
+health$smoker <- as.numeric(health$smoker)
+health$location_type<- as.numeric(health$location_type)
+health$education_level <- as.numeric(health$education_level)
+health$yearly_physical <- as.numeric(health$yearly_physical)
+health$married <- as.numeric(health$married)
+health$gender <- as.numeric(health$gender)
+health$exercise <- as.numeric(health$exercise)
+health$bmi=as.numeric(health$bmi)
+health$cost=as.factor(health$cost)
+
+
+glimpse(health)
+#view(health)
+#summary(health)
+#nrow(health)
+
+```
+
+
+
+
+
+#Partioning the Dataset for Training and Testing
+```{r}
+library(kernlab)
+library(caret)
+health$cost=as.factor(health$cost)
+trainList <-  createDataPartition(y=health$cost,p=.75,list=FALSE)
+trainset <- health[trainList,]
+testset <- health[-trainList,]
+```
+
+
+#SVM Model
+```{r}
+
+library(cvms)
+library(tibble)
+svm <- train(as.factor(cost) ~ ., data=trainset, method="svmRadial",preProc=c("center","scale"))
+svm
+svmpred=predict(svm,testset)
+table(svmpred, testset$cost)
+sum(diag(table(svmpred,testset$cost)))/sum(table(svmpred,testset$cost))
+confusionMatrix(svmpred, testset$cost)
+
+ctable=as.table(matrix(c(4040,654,136,738),nrow=2,byrow=TRUE))
+
+fourfoldplot(ctable, color = c("cyan", "pink"),
+             conf.level = 0, margin = 1, main = "Confusion Matrix")
+```
+
+#Recursive Partitioning and Regression Trees
+```{r}
+library(e1071)
+library(caret)
+library(rpart)
+library(ggplot2)
+library(rpart.plot)
+rpartmodel<-train(cost~age+bmi+smoker+exercise+gender,data=trainset,method="rpart")
+rpart.plot(rpartmodel$finalModel)
+rpartPred<-predict(rpartmodel,testset)
+confM2<-confusionMatrix(rpartPred,testset$cost)
+confM2
+```
