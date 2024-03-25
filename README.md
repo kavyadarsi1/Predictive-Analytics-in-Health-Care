@@ -1,4 +1,4 @@
-### Healthcare Cost Prediction Analysis
+### Predictive Analytics on Health Care Data
 
 ### Technical Stack:
 
